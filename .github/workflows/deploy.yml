@@ -3,6 +3,12 @@ name: Deploy Galton Board
 on:
   push:
     branches: [main]
+  
+# Add these permissions
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
