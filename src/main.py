@@ -2,6 +2,7 @@ import pygame
 import sys
 from config import *
 from setup import *
+from count import *
 from board import generate_pegs, draw_pegs, draw_bins
 from hist import draw_histogram
 from ball import Ball
@@ -15,6 +16,7 @@ pegs = generate_pegs(ROWS)
 
 balls = []
 frame_counter = 0
+counts = 0
 
 # Main loop
 while True:
@@ -28,7 +30,10 @@ while True:
         balls.append(Ball())
 
     for ball in balls:
+        prev_landed = ball.landed
         ball.update()
+        if not prev_landed and ball.landed:
+            counts += 1
 
     # Draw
     screen.fill((0, 0, 0))
@@ -36,7 +41,8 @@ while True:
     draw_bins(screen, bin_centers, bin_y, BIN_WIDTH, HIST_HEIGHT)
     for ball in balls:
         ball.draw(screen)
+    show_count(screen,counts, x_c, y_c)
     draw_histogram(screen, bin_centers, bin_counts, BIN_WIDTH, HIST_HEIGHT)
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(50)

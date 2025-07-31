@@ -9,6 +9,6 @@ def draw_histogram(screen, bin_centers, bin_counts, bin_width, hist_height):
         bar_height = int((count / max_count) * hist_height)
         pygame.draw.rect(
             screen,
-            (0, 255, 0),
+            (0, 150, 150),
             (x - bin_width // 2, screen_height - bar_height, bin_width, bar_height)
         )
