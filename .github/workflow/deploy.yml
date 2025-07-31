@@ -1,4 +1,4 @@
-name: Deploy Dino Game
+name: Deploy Galton Board
 
 on:
   push:
