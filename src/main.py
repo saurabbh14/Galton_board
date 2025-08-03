@@ -1,48 +1,64 @@
 import pygame
 import sys
+import asyncio
 from config import *
 from setup import *
 from count import *
 from board import generate_pegs, draw_pegs, draw_bins
 from hist import draw_histogram
 from ball import Ball
-pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Galton Board")
-clock = pygame.time.Clock()
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("Galton Board")
+        self.clock = pygame.time.Clock()
 
-pegs = generate_pegs(ROWS)
+        self.pegs = generate_pegs(ROWS)
 
-balls = []
-frame_counter = 0
-counts = 0
+        self.balls = []
+        self.frame_counter = 0
+        self.counts = 0
+
+    async def game_loop(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            self.frame_counter += 1
+            if self.frame_counter % BALL_DELAY == 0:
+                self.balls.append(Ball())
+
+            for ball in self.balls:
+                prev_landed = ball.landed
+                ball.update()
+                if not prev_landed and ball.landed:
+                    self.counts += 1
+
+            self.draw()
+            self.clock.tick(50)
+            # Required for Pygbag
+            await asyncio.sleep(0)
+
+    def draw(self):# Draw
+        self.screen.fill((0, 0, 0))
+        draw_pegs(self.screen, self.pegs, PEG_RADIUS)
+        draw_bins(self.screen, bin_centers, bin_y, BIN_WIDTH, HIST_HEIGHT)
+        for ball in self.balls:
+            ball.draw(self.screen)
+        show_count(self.screen, self.counts, x_c, y_c)
+        draw_histogram(self.screen, bin_centers, bin_counts, BIN_WIDTH, HIST_HEIGHT)
+        pygame.display.flip()
+
 
 # Main loop
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+async def main():
+    game = Game()
+    await game.game_loop()
+    pygame.quit()
 
-    frame_counter += 1
-    if frame_counter % BALL_DELAY == 0:
-        balls.append(Ball())
-
-    for ball in balls:
-        prev_landed = ball.landed
-        ball.update()
-        if not prev_landed and ball.landed:
-            counts += 1
-
-    # Draw
-    screen.fill((0, 0, 0))
-    draw_pegs(screen, pegs, PEG_RADIUS)
-    draw_bins(screen, bin_centers, bin_y, BIN_WIDTH, HIST_HEIGHT)
-    for ball in balls:
-        ball.draw(screen)
-    show_count(screen,counts, x_c, y_c)
-    draw_histogram(screen, bin_centers, bin_counts, BIN_WIDTH, HIST_HEIGHT)
-
-    pygame.display.flip()
-    clock.tick(50)
+if __name__ == "__main__":
+    asyncio.run(main())

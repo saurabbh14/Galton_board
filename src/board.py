@@ -6,9 +6,8 @@ def generate_pegs(rows):
     pegs = []
     for row in range(rows):
         y = MARGIN + row * PEG_SPACING
-        offset = PEG_SPACING / 2 if row % 2 == 1 else 0
         for col in range(row + 1):
-            x = WIDTH // 2 + (col - row / 2) * PEG_SPACING - offset*0
+            x = WIDTH // 2 + (col - row / 2) * PEG_SPACING
             pegs.append((x, y))
     return pegs
 
