@@ -33,14 +33,14 @@ jobs:
         run: ls -R ./src/build
 
       - name: Verify build output
-        run: ls -la ./build/web
+        run: ls -la ./src/build/web
 
       - name: Disable Jekyll
-        run: echo "" > ./build/web/.nojekyll
+        run: echo "" > ./src/build/web/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
+          publish_dir: ./src/build/web
           publish_branch: gh-pages
