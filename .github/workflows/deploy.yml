@@ -30,7 +30,7 @@ jobs:
         run: pygbag --build src/main.py
 
       - name: Debug build output
-        run: ls -R ./build
+        run: ls -R ./src/build
 
       - name: Verify build output
         run: ls -la ./build/web
