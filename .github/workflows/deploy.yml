@@ -2,32 +2,45 @@ name: Deploy Galton Board
 
 on:
   push:
-    branches: [main]
-
-permissions:
-  contents: write
+    branches: [master]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install pygbag
-      run: pip install pygbag
+      - name: Install pygbag
+        run: pip install pygbag
 
-    - name: Build with pygbag
-      run: pygbag --build .
+      - name: Verify main.py exists
+        run: |
+          if [ ! -f main.py ]; then
+            echo "Error: main.py not found!" && exit 1;
+          fi
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages            # <-- this line ensures branch is created
-        publish_dir: ./build/web
-        force_orphan: true                  # <-- makes a clean gh-pages branch 
+      - name: Build with pygbag
+        run: pygbag --build main.py
+
+      - name: Debug build output
+        run: ls -R ./build
+
+      - name: Verify build output
+        run: ls -la ./build/web
+
+      - name: Disable Jekyll
+        run: echo "" > ./build/web/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          publish_branch: gh-pages
