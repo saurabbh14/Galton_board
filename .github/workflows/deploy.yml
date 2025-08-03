@@ -15,19 +15,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install pygbag
         run: pip install pygbag
 
       - name: Verify main.py exists
         run: |
-          if [ ! -f main.py ]; then
+          if [ ! -f src/main.py ]; then
             echo "Error: main.py not found!" && exit 1;
           fi
 
       - name: Build with pygbag
-        run: pygbag --build main.py
+        run: pygbag --build src/main.py
 
       - name: Debug build output
         run: ls -R ./build
